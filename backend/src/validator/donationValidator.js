@@ -16,6 +16,14 @@ export const createDonationSchema =
     pickup_location: Joi.string()
       .required(),
 
+    latitude: Joi.number()
+      .allow(null)
+      .optional(),
+
+    longitude: Joi.number()
+      .allow(null)
+      .optional(),
+
     expiry_date: Joi.date()
       .required(),
 
