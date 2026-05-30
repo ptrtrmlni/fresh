@@ -89,7 +89,7 @@ function PersonalAnalytics() {
               </span>
               <div className="analytics-hero__chip-text">
                 <strong>
-                  {loading ? '—' : `${saved.total_kg ?? 0} kg`}
+                  {loading ? '—' : `${saved.total_kg ?? 0}`}
                 </strong>
                 <span>Total diselamatkan</span>
               </div>
@@ -236,15 +236,15 @@ function PersonalAnalytics() {
           ) : (
             <div className="analytics-saved">
               <div className="analytics-saved__item">
-                <span className="analytics-saved__value">{saved.used_kg ?? 0} kg</span>
+                <span className="analytics-saved__value">{saved.used_kg ?? 0}</span>
                 <span className="analytics-saved__label">Digunakan sendiri</span>
               </div>
               <div className="analytics-saved__item">
-                <span className="analytics-saved__value">{saved.donated_kg ?? 0} kg</span>
+                <span className="analytics-saved__value">{saved.donated_kg ?? 0}</span>
                 <span className="analytics-saved__label">Didonasikan</span>
               </div>
               <div className="analytics-saved__item">
-                <span className="analytics-saved__value">{saved.total_kg ?? 0} kg</span>
+                <span className="analytics-saved__value">{saved.total_kg ?? 0}</span>
                 <span className="analytics-saved__label">Total diselamatkan</span>
               </div>
             </div>
