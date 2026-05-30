@@ -30,7 +30,8 @@ export const getDonationRequestsModel = async (donationId) => {
         dr.notes,
         dr.status,
         TO_CHAR(dr.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
-        u.name AS requester_name
+        u.name AS requester_name,
+        u.address AS requester_address
       FROM donation_requests dr
       JOIN users u
         ON dr.requester_id = u.id
