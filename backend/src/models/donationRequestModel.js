@@ -21,24 +21,26 @@ export const createDonationRequestModel = async ({ donation_id, requester_id, qu
 
 export const getDonationRequestsModel = async (donationId) => {
   const result = await pool.query(
-    ` SELECT
-        dr.id,
-        dr.donation_id,
-        dr.requester_id,
-        dr.quantity,
-        TO_CHAR(dr.pickup_time, 'YYYY-MM-DD HH24:MI:SS') AS pickup_time,
-        dr.notes,
-        dr.status,
-        TO_CHAR(dr.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
-        u.name AS requester_name,
-        u.address AS requester_address
-      FROM donation_requests dr
-      JOIN users u
-        ON dr.requester_id = u.id
-      WHERE dr.donation_id = $1
-      ORDER BY dr.created_at DESC
+    `
+    SELECT
+      dr.id,
+      dr.donation_id,
+      dr.requester_id,
+      dr.quantity,
+      TO_CHAR(dr.pickup_time, 'YYYY-MM-DD HH24:MI:SS') AS pickup_time,
+      dr.notes,
+      dr.status,
+      TO_CHAR(dr.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
+      u.name AS requester_name,
+      COALESCE(NULLIF(u.location_name, ''), NULLIF(u.address, ''),'-') AS requester_address
+    FROM donation_requests dr
+    JOIN users u
+      ON dr.requester_id = u.id
+    WHERE dr.donation_id = $1
+    ORDER BY dr.created_at DESC
     `, [donationId]
   )
+
   return result.rows
 }
 
