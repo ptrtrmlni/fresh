@@ -26,7 +26,7 @@ export const getDonationRequestsModel = async (donationId) => {
         dr.donation_id,
         dr.requester_id,
         dr.quantity,
-        dr.pickup_time,
+        TO_CHAR(dr.pickup_time, 'YYYY-MM-DD HH24:MI:SS') AS pickup_time,
         dr.notes,
         dr.status,
         TO_CHAR(dr.created_at, 'YYYY-MM-DD HH24:MI:SS') AS created_at,
