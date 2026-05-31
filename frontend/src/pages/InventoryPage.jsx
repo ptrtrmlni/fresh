@@ -129,7 +129,7 @@ export default function InventoryPage() {
       await updateInventory(editId, {
         food_name: form.food_name,
         quantity: Number(form.quantity),
-        unit: form.unit,
+        Satuan: form.unit,
         category: form.category,
         storage_location: form.storage_location,
         purchase_date: form.purchase_date,
@@ -477,7 +477,7 @@ export default function InventoryPage() {
                 }
                 required
               />
-              <label>Unit</label>
+              <label>Satuan</label>
               <select
                 value={form.unit}
                 onChange={(e) =>
@@ -488,14 +488,13 @@ export default function InventoryPage() {
                 }
                 required
               >
-                <option value="">Pilih unit</option>
-                <option value="pcs">pcs</option>
+                <option value="">Pilih satuan</option>
+                <option value="gr">gr</option>
                 <option value="kg">kg</option>
-                <option value="gram">gram</option>
-                <option value="liter">liter</option>
                 <option value="ml">ml</option>
-                <option value="pack">pack</option>
-                <option value="box">box</option>
+                <option value="liter">liter</option>
+                <option value="pcs">pcs</option>
+                <option value="ikat">ikat</option>
               </select>
               <label>Kategori</label>
               <input
