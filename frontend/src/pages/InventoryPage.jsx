@@ -129,7 +129,7 @@ export default function InventoryPage() {
       await updateInventory(editId, {
         food_name: form.food_name,
         quantity: Number(form.quantity),
-        Satuan: form.unit,
+        unit: form.unit,
         category: form.category,
         storage_location: form.storage_location,
         purchase_date: form.purchase_date,
