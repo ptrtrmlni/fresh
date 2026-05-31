@@ -39,7 +39,6 @@ export const createProductSchema =
         .valid(
           'gr',
           'kg',
-          'gram',
           'liter',
           'ml',
           'ikat',
@@ -87,7 +86,6 @@ export const updateProductSchema =
         .valid(
           'gr',
           'kg',
-          'gram',
           'liter',
           'ml',
           'ikat',

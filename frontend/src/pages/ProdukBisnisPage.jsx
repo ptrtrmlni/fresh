@@ -7,7 +7,7 @@ import { getMyProducts, addProduct, updateProduct, deleteProduct } from '../serv
 import { loadUserLocation } from '../utils/geo'
 import '../styles/produkBisnis.css'
 
-const UNIT_OPTIONS = [ 'gr', 'kg', 'gram', 'liter', 'ml', 'ikat', 'pcs']
+const UNIT_OPTIONS = [ 'gr', 'kg', 'liter', 'ml', 'ikat', 'pcs']
 
 export default function ProdukBisnisPage() {
   const feedback = useFeedback()
