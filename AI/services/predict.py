@@ -7,7 +7,7 @@ import tensorflow as tf
 from PIL import Image
 
 
-DEFAULT_IMAGE_SIZE = (224, 224)
+DEFAULT_IMAGE_SIZE = (160, 160)
 MODEL_DIR = Path(__file__).resolve().parent.parent / "model"
 MODEL_PATH = MODEL_DIR / "food_vision_model.keras"
 LABEL_PATH = MODEL_DIR / "food_labels.json"
@@ -65,7 +65,12 @@ def load_class_names():
 @lru_cache
 def load_model():
     _ensure_assets_exist()
-    return tf.keras.models.load_model(MODEL_PATH)
+    return tf.keras.models.load_model(
+        MODEL_PATH,
+        custom_objects={
+            "preprocess_input": tf.keras.applications.mobilenet_v2.preprocess_input
+        }
+    )
 
 
 def preprocess_image(image_source, image_size=DEFAULT_IMAGE_SIZE):
