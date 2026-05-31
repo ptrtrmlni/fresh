@@ -1,5 +1,15 @@
 import { useRef, useState } from 'react'
-import { Upload, Camera, CalendarDays, CircleAlert, Archive, ShieldCheck, ImageIcon, RotateCcw, ScanSearch } from 'lucide-react'
+import {
+  Upload,
+  Camera,
+  Archive,
+  ShieldCheck,
+  ImageIcon,
+  RotateCcw,
+  ScanSearch,
+  Lightbulb,
+  CheckCircle2,
+} from 'lucide-react'
 import AppLayout from '../components/AppLayout'
 import BusinessLayout from '../components/BusinessLayout'
 import { scanFoodImage } from '../services/scanService'
@@ -9,37 +19,35 @@ export default function PemindaiAIPage() {
   const fileInputRef = useRef(null)
   const videoRef = useRef(null)
   const canvasRef = useRef(null)
+
   const [selectedImage, setSelectedImage] = useState(null)
   const [previewUrl, setPreviewUrl] = useState('')
   const [prediction, setPrediction] = useState(null)
   const [loading, setLoading] = useState(false)
   const [showCamera, setShowCamera] = useState(false)
   const [cameraStream, setCameraStream] = useState(null)
-  const user = JSON.parse(
-    localStorage.getItem('user') || '{}'
-  )
 
-  const Layout =
-    user.role === 'bisnis'
-      ? BusinessLayout
-      : AppLayout
+  const user = JSON.parse(localStorage.getItem('user') || '{}')
+  const Layout = user.role === 'bisnis' ? BusinessLayout : AppLayout
 
   function handleImageChange(e) {
     const file = e.target.files[0]
     if (!file) return
+
     if (!file.type.startsWith('image/')) {
       alert('File harus berupa gambar')
       e.target.value = ''
       return
     }
+
     if (file.size > 5 * 1024 * 1024) {
       alert('Ukuran foto maksimal 5 MB')
       e.target.value = ''
       return
     }
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
-    }
+
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+
     setSelectedImage(file)
     setPreviewUrl(URL.createObjectURL(file))
     setPrediction(null)
@@ -52,34 +60,28 @@ export default function PemindaiAIPage() {
 
   async function handleOpenCamera() {
     try {
-      const stream =
-        await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: 'environment',
-          },
-          audio: false,
-        })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+        audio: false,
+      })
+
       setCameraStream(stream)
       setShowCamera(true)
+
       setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-        }
+        if (videoRef.current) videoRef.current.srcObject = stream
       }, 100)
     } catch (error) {
-      alert(
-        'Kamera tidak bisa dibuka. Pastikan izin kamera sudah diaktifkan.'
-      )
+      alert('Kamera tidak bisa dibuka. Pastikan izin kamera sudah diaktifkan.')
       console.error(error)
     }
   }
 
   function handleCloseCamera() {
     if (cameraStream) {
-      cameraStream
-        .getTracks()
-        .forEach((track) => track.stop())
+      cameraStream.getTracks().forEach((track) => track.stop())
     }
+
     setCameraStream(null)
     setShowCamera(false)
   }
@@ -87,30 +89,25 @@ export default function PemindaiAIPage() {
   function handleCapturePhoto() {
     const video = videoRef.current
     const canvas = canvasRef.current
+
     if (!video || !canvas) return
+
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
+
     const context = canvas.getContext('2d')
-    context.drawImage(
-      video,
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    )
+    context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
     canvas.toBlob(
       (blob) => {
         if (!blob) return
-        const file = new File(
-          [blob],
-          'camera-photo.jpg',
-          {
-            type: 'image/jpeg',
-          }
-        )
-        if (previewUrl) {
-          URL.revokeObjectURL(previewUrl)
-        }
+
+        const file = new File([blob], 'camera-photo.jpg', {
+          type: 'image/jpeg',
+        })
+
+        if (previewUrl) URL.revokeObjectURL(previewUrl)
+
         setSelectedImage(file)
         setPreviewUrl(URL.createObjectURL(file))
         setPrediction(null)
@@ -122,9 +119,8 @@ export default function PemindaiAIPage() {
   }
 
   function handleReset() {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
-    }
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+
     setSelectedImage(null)
     setPreviewUrl('')
     setPrediction(null)
@@ -136,9 +132,11 @@ export default function PemindaiAIPage() {
       alert('Unggah foto terlebih dahulu')
       return
     }
+
     try {
       setLoading(true)
       setPrediction(null)
+
       const data = await scanFoodImage(selectedImage)
       setPrediction(data)
     } catch (error) {
@@ -151,49 +149,50 @@ export default function PemindaiAIPage() {
 
   function getRiskClass(risk) {
     const value = String(risk || '').toLowerCase()
-    if (value === 'high' || value === 'tinggi') {
+
+    if (
+      value.includes('high') ||
+      value.includes('tinggi') ||
+      value.includes('danger')
+    ) {
       return 'risk-high'
     }
+
     if (
-      value === 'warning' ||
-      value === 'medium' ||
-      value === 'sedang'
+      value.includes('warning') ||
+      value.includes('medium') ||
+      value.includes('sedang')
     ) {
       return 'risk-medium'
     }
+
     return 'risk-low'
   }
 
-  const detectedFood =
-    prediction?.detected_food ||
-    prediction?.food_name ||
-    '-'
-
-  const category =
-    prediction?.category ||
-    '-'
+  const detectedFood = prediction?.detected_food || prediction?.food_name || '-'
+  const category = prediction?.category || '-'
 
   const shelfLife =
-    prediction?.estimated_shelf_life_days ||
-    prediction?.shelf_life ||
-    null
+    prediction?.estimated_shelf_life_days || prediction?.shelf_life || null
 
-  const riskLabel =
-    prediction?.risk_label ||
-    prediction?.risk ||
-    '-'
+  const riskLabel = prediction?.risk_label || prediction?.risk || '-'
 
-  const topPredictions =
-    Array.isArray(prediction?.top_predictions)
-      ? prediction.top_predictions
-      : Array.isArray(prediction?.predictions)
-        ? prediction.predictions
-        : []
+  const confidence = Number(prediction?.confidence || 0)
+  const confidencePercent = Number((confidence * 100).toFixed(0))
 
-  const recommendations =
-    Array.isArray(prediction?.recommendations)
-      ? prediction.recommendations
+  const topPredictions = Array.isArray(prediction?.top_predictions)
+    ? prediction.top_predictions
+    : Array.isArray(prediction?.predictions)
+      ? prediction.predictions
       : []
+
+  const recommendations = Array.isArray(prediction?.recommendations)
+    ? prediction.recommendations
+    : []
+
+  const recipeIdeas = Array.isArray(prediction?.recipe_ideas)
+    ? prediction.recipe_ideas
+    : []
 
   return (
     <Layout title="PEMINDAI AI" pageTitle="PEMINDAI AI">
@@ -208,6 +207,7 @@ export default function PemindaiAIPage() {
                 className="upload-input"
                 onChange={handleImageChange}
               />
+
               {previewUrl ? (
                 <img
                   src={previewUrl}
@@ -224,12 +224,11 @@ export default function PemindaiAIPage() {
                     <br />
                     atau pilih tombol unggah/kamera
                   </p>
-                  <span>
-                    Format: JPG, PNG Maks. 5MB
-                  </span>
+                  <span>Format: JPG, PNG Maks. 5MB</span>
                 </>
               )}
             </div>
+
             <div className="image-actions">
               <button
                 type="button"
@@ -239,6 +238,7 @@ export default function PemindaiAIPage() {
                 <Upload size={20} />
                 Unggah Foto
               </button>
+
               <button
                 type="button"
                 className="camera-btn"
@@ -248,6 +248,7 @@ export default function PemindaiAIPage() {
                 Buka Kamera
               </button>
             </div>
+
             {selectedImage && (
               <button
                 type="button"
@@ -258,6 +259,7 @@ export default function PemindaiAIPage() {
                 Reset
               </button>
             )}
+
             <button
               className="scan-btn"
               type="button"
@@ -265,10 +267,9 @@ export default function PemindaiAIPage() {
               disabled={loading}
             >
               <ScanSearch size={26} />
-              {loading
-                ? 'Memindai...'
-                : 'Pindai Makanan'}
+              {loading ? 'Memindai...' : 'Pindai Makanan'}
             </button>
+
             <div className="security-note">
               <ShieldCheck size={22} />
               <p>
@@ -278,6 +279,7 @@ export default function PemindaiAIPage() {
               </p>
             </div>
           </div>
+
           <div className="ai-right">
             {!prediction && !loading && (
               <div className="result-card empty-result">
@@ -286,133 +288,136 @@ export default function PemindaiAIPage() {
                 </div>
                 <h2>Belum Ada Hasil Prediksi</h2>
                 <p>
-                  Unggah foto makanan terlebih dahulu,
-                  lalu klik tombol Pindai Makanan.
+                  Unggah foto makanan terlebih dahulu, lalu klik tombol Pindai
+                  Makanan.
                 </p>
               </div>
             )}
+
             {loading && (
               <div className="result-card empty-result">
                 <div className="loading-spinner"></div>
                 <h2>Menganalisis Foto...</h2>
-                <p>
-                  Sistem sedang memproses gambar makanan.
-                </p>
+                <p>Sistem sedang memproses gambar makanan.</p>
               </div>
             )}
+
             {prediction && (
-              <div className="prediction-scroll">
-                <div className="result-card">
-                  <h2>Hasil Prediksi</h2>
-                  <div
-                    className={`prediction-main ${getRiskClass(
-                      riskLabel
-                    )}`}
-                  >
+              <div className="prediction-scroll prediction-modern">
+                <div className={`result-card result-hero ${getRiskClass(riskLabel)}`}>
+                  <div className="hero-top">
                     <div>
-                      <h3>{detectedFood}</h3>
+                      <h2>{detectedFood}</h2>
                       <p>{category}</p>
                     </div>
-                    <div className="prediction-info">
-                      <div className="info-box">
-                        <CalendarDays size={24} />
-                        <div>
-                          <p>Umur simpan</p>
-                          <b>
-                            {shelfLife
-                              ? `${shelfLife} hari`
-                              : '-'}
-                          </b>
-                        </div>
-                      </div>
-                      <div className="info-box warning">
-                        <CircleAlert size={24} />
-                        <div>
-                          <p>Risiko</p>
-                          <b>{riskLabel}</b>
-                        </div>
-                      </div>
+
+                    <span className="risk-pill">{riskLabel}</span>
+                  </div>
+
+                  <div className="hero-metrics">
+                    <div className="metric-box">
+                      <p>Akurasi</p>
+                      <b>{confidencePercent}%</b>
+                    </div>
+
+                    <div className="metric-box">
+                      <p>Masa Simpan</p>
+                      <b>{shelfLife ? `${shelfLife}d` : '-'}</b>
+                    </div>
+
+                    <div className="metric-box">
+                      <p>Risiko</p>
+                      <CheckCircle2 size={22} />
                     </div>
                   </div>
                 </div>
+
                 <div className="result-card">
                   <h2>Prediksi Teratas</h2>
-                  <div className="prediction-list">
+
+                  <div className="prediction-list modern-list">
                     {topPredictions.length > 0 ? (
-                      topPredictions.map(
-                        (item, index) => {
-                          const percent =
-                            item.percent ??
-                            ((item.confidence || 0) *
-                              100)
-                          return (
-                            <div
-                              className="prediction-item"
-                              key={index}
-                            >
-                              <span>{index + 1}</span>
-                              <p>
-                                {item.label ||
-                                  item.name ||
-                                  '-'}
-                              </p>
-                              <div className="bar">
-                                <div
-                                  style={{
-                                    width: `${Number(
-                                      percent
-                                    ).toFixed(2)}%`,
-                                  }}
-                                ></div>
-                              </div>
-                              <b>
-                                {Number(percent).toFixed(0)}
-                                %
-                              </b>
+                      topPredictions.map((item, index) => {
+                        const percent =
+                          item.percent ?? Number(item.confidence || 0) * 100
+
+                        return (
+                          <div className="modern-prediction-item" key={index}>
+                            <div className="prediction-row">
+                              <p>{item.label || item.name || '-'}</p>
+                              <b>{Number(percent).toFixed(0)}%</b>
                             </div>
-                          )
-                        }
-                      )
+
+                            <div className="modern-bar">
+                              <div
+                                style={{
+                                  width: `${Number(percent).toFixed(2)}%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        )
+                      })
                     ) : (
                       <p>Tidak ada data prediksi.</p>
                     )}
                   </div>
                 </div>
+
                 <div className="result-card">
-                  <h2>Saran Penyimpanan</h2>
-                  <div className="storage-box">
-                    <div className="storage-icon">
-                      <Archive size={32} />
-                    </div>
-                    <p>
-                      {prediction.storage_advice ||
-                        'Belum ada saran penyimpanan.'}
-                    </p>
-                  </div>
+                  <h2>
+                    <Archive size={16} />
+                    Saran Penyimpanan
+                  </h2>
+
+                  <p className="plain-text">
+                    {prediction.storage_advice || 'Belum ada saran penyimpanan.'}
+                  </p>
                 </div>
+
                 <div className="result-card">
-                  <h2>Rekomendasi</h2>
+                  <h2>
+                    <Lightbulb size={16} />
+                    Rekomendasi AI
+                  </h2>
+
                   <div className="recommendation-list">
                     {recommendations.length > 0 ? (
-                        recommendations.map((item, index) => (
-                      <div
-                        className="recommendation-item"
-                        key={index}
-                      >
-                      <span>{index + 1}</span>
-                      <p>{item}</p>
-                    </div>
-                  ))
+                      recommendations.map((item, index) => (
+                        <div className="recommendation-item modern-rec" key={index}>
+                          <span>{index + 1}</span>
+                          <p>{item}</p>
+                        </div>
+                      ))
                     ) : (
-                    <p>Belum ada rekomendasi.</p>
+                      <p>Belum ada rekomendasi.</p>
                     )}
                   </div>
                 </div>
+
+                {recipeIdeas.length > 0 && (
+                  <div className="result-card">
+                    <h2>
+                      <Lightbulb size={16} />
+                      Ide Resep
+                    </h2>
+
+                    <div className="recommendation-list orange-list">
+                      {recipeIdeas.map((item, index) => (
+                        <div className="recommendation-item modern-rec" key={index}>
+                          <span>{index + 1}</span>
+                          <p>{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
         </div>
       </section>
+
       {showCamera && (
         <div className="camera-overlay">
           <div className="camera-modal">
@@ -422,10 +427,9 @@ export default function PemindaiAIPage() {
               playsInline
               className="camera-preview"
             />
-            <canvas
-              ref={canvasRef}
-              className="camera-canvas"
-            />
+
+            <canvas ref={canvasRef} className="camera-canvas" />
+
             <div className="camera-actions">
               <button
                 type="button"
@@ -434,6 +438,7 @@ export default function PemindaiAIPage() {
               >
                 Batalkan
               </button>
+
               <button
                 type="button"
                 className="camera-capture-btn"

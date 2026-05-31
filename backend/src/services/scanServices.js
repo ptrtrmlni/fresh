@@ -34,7 +34,10 @@ const callAIModel = async (file) => {
     if (!response.ok) {
       const errorText = await response.text()
 
-      const error = new Error(`AI service gagal memproses gambar: ${errorText}`)
+      const error = new Error(
+        `AI service gagal memproses gambar: ${errorText}`
+      )
+
       error.statusCode = 502
       throw error
     }
@@ -50,30 +53,49 @@ const callAIModel = async (file) => {
     )
 
     error.statusCode = err.statusCode || 502
+
     throw error
   }
 }
 
-const normalizePredictions = (topPredictions = []) => {
+const normalizePredictions = (
+  topPredictions = []
+) => {
   if (!Array.isArray(topPredictions)) {
     return []
   }
 
   return topPredictions.map((item) => ({
     label: item.label || 'Unknown',
-    confidence: Number(item.confidence || 0),
-    percent: Number(((item.confidence || 0) * 100).toFixed(2)),
+    confidence: Number(
+      item.confidence || 0
+    ),
+    percent: Number(
+      ((item.confidence || 0) * 100).toFixed(0)
+    ),
   }))
 }
 
-export const scanFoodService = async (file) => {
+const normalizeArray = (value) => {
+  return Array.isArray(value)
+    ? value
+    : []
+}
+
+export const scanFoodService = async (
+  file
+) => {
   if (!file) {
-    const error = new Error('Gambar wajib diupload')
+    const error = new Error(
+      'Gambar wajib diupload'
+    )
+
     error.statusCode = 400
     throw error
   }
 
-  const aiResult = await callAIModel(file)
+  const aiResult =
+    await callAIModel(file)
 
   return {
     image: {
@@ -82,31 +104,56 @@ export const scanFoodService = async (file) => {
       size: file.size,
     },
 
-    detected_food: aiResult.detected_food || null,
-    category: aiResult.category || null,
-    confidence: Number(aiResult.confidence || 0),
+    detected_food:
+      aiResult.detected_food || null,
 
-    is_low_confidence: Boolean(aiResult.is_low_confidence),
-    needs_review: Boolean(aiResult.needs_review),
-    confidence_threshold: Number(aiResult.confidence_threshold || 0),
+    category:
+      aiResult.category || null,
 
-    source: aiResult.source || 'tensorflow_vision_model',
+    confidence: Number(
+      aiResult.confidence || 0
+    ),
+
+    is_low_confidence: Boolean(
+      aiResult.is_low_confidence
+    ),
+
+    needs_review: Boolean(
+      aiResult.needs_review
+    ),
+
+    confidence_threshold: Number(
+      aiResult.confidence_threshold || 0
+    ),
 
     estimated_shelf_life_days:
-      aiResult.estimated_shelf_life_days
-        ? Number(aiResult.estimated_shelf_life_days)
+      aiResult.estimated_shelf_life_days !==
+        undefined &&
+      aiResult.estimated_shelf_life_days !==
+        null
+        ? Number(
+            aiResult.estimated_shelf_life_days
+          )
         : null,
 
-    risk_label: aiResult.risk_label || null,
+    risk_label:
+      aiResult.risk_label || null,
 
-    storage_advice: aiResult.storage_advice || null,
+    storage_advice:
+      aiResult.storage_advice || null,
 
-    recommendations: Array.isArray(aiResult.recommendations)
-      ? aiResult.recommendations
-      : [],
+    recommendations:
+      normalizeArray(
+        aiResult.recommendations
+      ),
 
-    top_predictions: normalizePredictions(
-      aiResult.top_predictions
+    recipe_ideas: normalizeArray(
+      aiResult.recipe_ideas
     ),
+
+    top_predictions:
+      normalizePredictions(
+        aiResult.top_predictions
+      ),
   }
 }
