@@ -15,7 +15,7 @@ Aplikasi ini terdiri dari tiga bagian utama:
 | Bagian | Teknologi | Fungsi |
 | --- | --- | --- |
 | Frontend | React, Vite, React Router, Axios, Leaflet | Antarmuka web untuk pengguna. |
-| Backend | Node.js, Express, PostgreSQL, JWT, Socket.IO | REST API, autentikasi, data aplikasi, transaksi, notifikasi, dan realtime message. |
+| Backend | Node.js, Express, PostgreSQL, JWT | REST API, autentikasi, data aplikasi, transaksi, dan notification. |
 | AI Service | FastAPI, TensorFlow, Gemini API | Pemindai makanan, prediksi risiko, dan rekomendasi berbasis AI/fallback heuristic. |
 
 ## Fitur Utama
