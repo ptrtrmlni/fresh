@@ -38,7 +38,7 @@ export default function BusinessSidebar({ isOpen = false, onClose }) {
 
         <div className="app-sidebar__brand">
           <h1>F.R.E.S.H</h1>
-          <p>Food Resource & Smart Handling</p>
+          <p>Food Resource Efficiency & Smart Handling</p>
         </div>
       </div>
 
