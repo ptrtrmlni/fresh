@@ -22,11 +22,12 @@ export const createInventorySchema = Joi.object({
     .valid(
       'pcs',
       'kg',
-      'gram',
       'liter',
       'ml',
       'pack',
-      'box'
+      'box',
+      'gr',
+      'ikat'
     )
     .required()
     .messages({
@@ -75,11 +76,12 @@ export const updateInventorySchema = Joi.object({
     .valid(
       'pcs',
       'kg',
-      'gram',
       'liter',
       'ml',
       'pack',
-      'box'
+      'box',
+      'gr',
+      'ikat'
     )
     .required(),
 
