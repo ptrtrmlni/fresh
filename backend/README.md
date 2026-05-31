@@ -512,7 +512,6 @@ CORS_ORIGIN=http://localhost:5173,https://your-domain.vercel.app
 ```
 
 ### Unauthorized
-
 Pastikan request mengirim:
 
 ```http

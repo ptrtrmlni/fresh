@@ -16,7 +16,6 @@ Frontend F.R.E.S.H adalah aplikasi web React untuk membantu pengguna mengurangi 
 - Deployment: Vercel
 
 ## Struktur Folder
-
 ```text
 frontend/
 |-- public/                     # Asset publik

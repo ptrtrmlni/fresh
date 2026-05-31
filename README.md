@@ -1,5 +1,4 @@
 # F.R.E.S.H - Food Resource Efficiency & Smart Handling
-
 F.R.E.S.H adalah aplikasi web untuk membantu mengurangi food waste melalui pengelolaan inventaris makanan, prediksi risiko kedaluwarsa, pemindai AI, rekomendasi pemanfaatan bahan, donasi makanan, marketplace, transaksi, notifikasi, analytics, dan subscription.
 
 Aplikasi ini dirancang untuk dua jenis pengguna:
